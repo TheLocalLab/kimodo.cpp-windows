@@ -52,18 +52,24 @@ function Find-Python {
 }
 
 if ($Mode -eq "demo") {
-  $go = $null
-  try { $go = (Get-Command go -ErrorAction Stop).Source } catch {}
-  if (-not $go -and (Test-Path -LiteralPath "C:\Program Files\Go\bin\go.exe")) { $go = "C:\Program Files\Go\bin\go.exe" }
-  if (-not $go) { throw "Go not found. Install from https://go.dev/dl/ (tested: go1.27.1 windows-amd64.msi)." }
   $genExe = Join-Path $RepoRoot "build\Release\kmd-generate.exe"
   if (-not (Test-Path -LiteralPath $genExe)) { throw "Missing $genExe. Build first: cmake --build build --config Release" }
   $somaRP = Join-Path $RepoRoot "models\kimodo-soma-rp-v1.1-f32.gguf"
   $textDir = Join-Path $RepoRoot "generated\llm2vec-text-bundle"
   $outDir = Join-Path $RepoRoot "demo-output"
+  $demoArgs = @("-addr", $Addr, "-generator", $genExe, "-soma-rp-model", $somaRP, "-text-bundle", $textDir, "-output", $outDir)
   Write-Host "Starting demo at http://$Addr (Ctrl+C to stop)..."
   Write-Host "Note: only models with downloaded GGUFs are selectable; others correctly show coming soon."
-  & $go run ./demo -addr $Addr -generator $genExe -soma-rp-model $somaRP -text-bundle $textDir -output $outDir
+  $demoExe = Join-Path $RepoRoot "demo\demo.exe"
+  if (Test-Path -LiteralPath $demoExe) {
+    & $demoExe @demoArgs
+    exit $LASTEXITCODE
+  }
+  $go = $null
+  try { $go = (Get-Command go -ErrorAction Stop).Source } catch {}
+  if (-not $go -and (Test-Path -LiteralPath "C:\Program Files\Go\bin\go.exe")) { $go = "C:\Program Files\Go\bin\go.exe" }
+  if (-not $go) { throw "Neither demo\demo.exe nor Go found. Re-download the package or install Go from https://go.dev/dl/." }
+  & $go run ./demo @demoArgs
   exit $LASTEXITCODE
 }
 
