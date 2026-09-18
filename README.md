@@ -27,6 +27,10 @@ Then double-click **`Launch-Kimodo.bat`** to generate, or
 **`Launch-Kimodo-UI.bat`** for the browser studio at
 `http://127.0.0.1:8094`. No terminal needed after building.
 
+Prefer to skip the build? There is a
+[one-click supporter installer](https://www.patreon.com/TheLocalLab/posts/kimodo-cpp-one-169875852)
+that sets everything up for you.
+
 ## Models and disk space
 
 | Model | Skeleton | Size |
